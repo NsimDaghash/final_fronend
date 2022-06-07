@@ -1,13 +1,17 @@
-import { START_LOADING, END_LOADING, FETCH_ALL, FETCH_POST, FETCH_BY_SEARCH, CREATE, UPDATE, DELETE, LIKE ,COMMENT} from '../constants/actionTypes';
-import * as api from '../api/index.js';
+// get the data from client/api/posts.js
+// send the data to client/reducers/posts.js
 
-export const getPost = (id) => async (dispatch) => {
+import { START_LOADING, END_LOADING, FETCH_ALL, FETCH_POST, FETCH_BY_SEARCH, CREATE, UPDATE, DELETE, LIKE ,COMMENT} from '../constants/actionTypes';
+import * as api from '../api'; //import every thibg from the actions as api
+//import * as api from '../api/index.js'
+//Action creators - function that return actions
+export const getPost = (id) => async (dispatch) => { //its async data to actually fitch all the posts we need (use redux-thunk) 
   try {
     dispatch({ type: START_LOADING });
 
     const { data } = await api.fetchPost(id);
 
-    dispatch({ type: FETCH_POST, payload: { post: data } });
+    dispatch({ type: FETCH_POST, payload: { post: data } }); // in react redux you need to dispatch instide of return ,payload is usually the data where we store our posts .
   } catch (error) {
     console.log(error);
   }
@@ -51,10 +55,11 @@ export const getPostsByCreator = (name) => async (dispatch) => {
 };
 */
 
-export const createPost = (post, navigate) => async (dispatch) => {
+export const createPost = (post, navigate) => async (dispatch) => {    // dispatch comes from redux-thunk
+    console.log("2 step creating post - src/actions/posts.js");
   try {
     dispatch({ type: START_LOADING });
-    const { data } = await api.createPost(post);
+    const { data } = await api.createPost(post);  //this make a post  api request to the server and we are sending a post to it
 
     dispatch({ type: CREATE, payload: data });
 	// check this :
@@ -63,7 +68,7 @@ export const createPost = (post, navigate) => async (dispatch) => {
     console.log(error);
   }
 };
-
+// update the selected post 
 export const updatePost = (id, post) => async (dispatch) => {
   try {
     const { data } = await api.updatePost(id, post);
@@ -72,7 +77,7 @@ export const updatePost = (id, post) => async (dispatch) => {
   } catch (error) {
     console.log(error);
   }
-};
+};  // after this go to reducers to - posts.js
 
 export const likePost = (id) => async (dispatch) => {
   const user = JSON.parse(localStorage.getItem('profile'));
@@ -98,12 +103,13 @@ export const commentPost = (value,id) => async (dispatch) => {
       console.log(error); 
     }
 };
-
+// delete the post 
 export const deletePost = (id) => async (dispatch) => {
   try {
     await await api.deletePost(id);
 
     dispatch({ type: DELETE, payload: id });
+    window.location.reload(false);
   } catch (error) {
     console.log(error);
   }
